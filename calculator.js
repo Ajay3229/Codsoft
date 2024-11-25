@@ -1,48 +1,57 @@
-window.onload = function() {
-    var input = document.getElementById("inputBox");
-    var container = document.getElementById("container");
+let currentOperand = '';
+let previousOperand = '';
+let operation = null;
 
-    container.addEventListener("click", function(e) {
-        buttonClick(e.target.id);
-    });
+function appendNumber(number) {
+  if (number === '.' && currentOperand.includes('.')) return;
+  currentOperand += number;
+  updateScreen();
+}
 
-    var calc = document.getElementById("Button=");
-    calc.addEventListener("click",calculate);
+function updateScreen() {
+  const screen = document.querySelector('.calculator-screen');
+  screen.value = currentOperand;
+}
 
-    var C = document.getElementById("ButtonC");
-    C.addEventListener("click", erase);
+function chooseOperator(op) {
+  if (currentOperand === '') return;
+  if (previousOperand !== '') compute();
+  operation = op;
+  previousOperand = currentOperand;
+  currentOperand = '';
+}
 
-    function buttonClick(buttonId) {
-        if((buttonId != "ButtonC") && (buttonId != "Button=")) {
-            var button = document.getElementById(buttonId);
-             var s = buttonId;
-             s = s.replace("Button", "");
-             entries(s);
-        }
-    }
+function compute() {
+  let result;
+  const prev = parseFloat(previousOperand);
+  const current = parseFloat(currentOperand);
+  if (isNaN(prev) || isNaN(current)) return;
 
-    function entries(s) {
-        input.value += s;
-        /* button1: s = "1"
-        input.value = undefined
-        entries("1")
-        input.value =+ s
-        input.value = input.value + s = undefined + "1" = "1"
-        button2 : s = "2"
-        input.value ="1"
-        entries("2")
-        input.value = input.value + s = "1" + "2" ="12"
-        */
-    }
+  switch (operation) {
+    case '+':
+      result = prev + current;
+      break;
+    case '-':
+      result = prev - current;
+      break;
+    case '*':
+      result = prev * current;
+      break;
+    case '/':
+      result = prev / current;
+      break;
+    default:
+      return;
+  }
+  currentOperand = result.toString();
+  operation = null;
+  previousOperand = '';
+  updateScreen();
+}
 
-    function calculate() {
-        if(input.value == ".") {
-            alert("Please Enter a Mathematical Expression");
-        }
-        input.value = eval(input.value);
-    }
-
-    function erase() {
-        input.value = "";
-    }
-};
+function clearScreen() {
+  currentOperand = '';
+  previousOperand = '';
+  operation = null;
+  updateScreen();
+}
